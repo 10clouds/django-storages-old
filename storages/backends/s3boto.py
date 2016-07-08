@@ -454,14 +454,20 @@ class S3BotoStorage(Storage):
         # Parse the last_modified string to a local datetime object.
         return parse_ts_extended(entry.last_modified)
 
-    def url(self, name):
+    def url(self, name, response_headers=None):
         name = self._normalize_name(self._clean_name(name))
         if self.custom_domain:
             return "%s//%s/%s" % (self.url_protocol,
                                   self.custom_domain, name)
-        return self.connection.generate_url(self.querystring_expire,
-            method='GET', bucket=self.bucket.name, key=self._encode_name(name),
-            query_auth=self.querystring_auth, force_http=not self.secure_urls)
+        return self.connection.generate_url(
+            self.querystring_expire,
+            bucket=self.bucket.name,
+            force_http=not self.secure_urls,
+            key=self._encode_name(name),
+            method='GET',
+            query_auth=self.querystring_auth,
+            response_headers=response_headers,
+        )
 
     def get_available_name(self, name):
         """ Overwrite existing file with the same name. """
