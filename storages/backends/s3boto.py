@@ -456,7 +456,7 @@ class S3BotoStorage(Storage):
 
     def url(self, name, response_headers=None):
         name = self._normalize_name(self._clean_name(name))
-        if self.custom_domain:
+        if self.custom_domain and not response_headers:
             return "%s//%s/%s" % (self.url_protocol,
                                   self.custom_domain, name)
         return self.connection.generate_url(
